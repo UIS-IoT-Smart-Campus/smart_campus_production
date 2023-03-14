@@ -1,0 +1,61 @@
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    #env_file: ./.env
+    #environment:
+    #  MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
+    #  MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+    networks: 
+      - smart_uis
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    #env_file: ./.env
+    #environment:
+    #  ME_CONFIG_MONGODB_ADMINUSERNAME: $MONGO_INITDB_ROOT_USERNAME
+    #  ME_CONFIG_MONGODB_ADMINPASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+    #  ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    networks: 
+      - smart_uis
+
+  mqtt_broker:
+    container_name: mqtt_broker
+    image: eclipse-mosquitto
+    restart: always
+    ports:
+      - 1883:1883
+    networks: 
+      - smart_uis
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+  
+  data_microservice:
+    container_name: data_microservice
+    restart: always
+    depends_on:
+      - mqtt_broker
+      - mongo
+    build: data_microservice
+    ports:
+      - 8091:8091
+    networks:
+      - smart_uis
+    environment:
+      - MONGO_HOST=mongo
+      - BROKER_IP=mqtt_broker
+
+
+networks: 
+  smart_uis:
+    driver: bridge
