@@ -1,6 +1,7 @@
 
 # Plataforma Smart Campus UIS
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Repositorio con las versiones de producción para la plataforma Smart Campus UIS, el sistema actual despliega los siguientes contenedores: 
 
