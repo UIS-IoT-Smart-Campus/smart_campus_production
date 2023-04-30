@@ -1,6 +1,7 @@
 
 # Plataforma Smart Campus UIS
 
+
 Repositorio con las versiones de producción para la plataforma Smart Campus UIS, el sistema actual despliega los siguientes contenedores: 
 
 - **MONGODB**: Base de datos documental para almacenamiento de los datos o mensajes enviados por los dispositivos, actualmente esta desactivada la seguidad y permite la conexión por el puerto 27017.
@@ -22,9 +23,59 @@ Los mensajes deben ser enviados al broker usando el tópico **device-messages**,
 
 - **timeStamp**: Es la fecha y hora de generación del dato, acepta formato de envio DD-MM--YY HH:MM:SS, por ejemplo "14-03-2023 12:42:57".
 
-- **data**: Dato del sensor o dispositivo en String. 
+- **values**: El valor o los valores enviados por los sensores en formato de objeto JSON, por elemplo un mensaje puede ser {"temperatura":25}, otro ejemplo puede ser {"Oxigeno":95, "CO2":22,"Lugar":"RUTA P8"}. 
 
 - **status** (opcional): Estado del dispositivo cuando se envió el mensaje, por defecto de puede enviar "OK".
 
 - **alert** (opcional): Booleano que indica si se ha disparado una alerta en el dispositivo.  
 
+
+
+## Despliegue
+
+El despliegue se debe realizar mediante Docker-Compose una vez descargado el respositorio se puede desplegar con el comando "docker-compose up -d" en la carpeta raíz del proyecto, aspectos de comunicación a tener en cuenta se describen a continuación: 
+
+### Metodos de envió de mensajes
+
+Actualmente están configurados los siguientes métodos para el envió de mensajes:
+- **MQTT**: se pueden publicar mensajes desde dispositivos en la plataforma mediante el tópico *device-messages* siguiendo el formato de los mensajes especificado anteriormente.
+
+### Data Messages API
+
+Para consumir los mensajes la API REST que expone el microservicio en el puerto 8091 se cuenta con un endpoint que admite el parametro *uuid* que es el identificador único del dispositivo, con este parámetro se puede obtener los mensajes que ha enviado el dispositivo, un ejemplo de solicitud por metodo GET sería: 
+
+```
+http://localhost:8091/device/?uuid=1
+```
+
+Y la respuesta que se obtiene si existen mensajes guardados para este dispositivos en base de datos es: 
+
+
+```json
+[
+    {
+        "deviceUUID": "1",
+        "topic": "temperatura",
+        "timeStamp": "30-04-2023 10:39:02",
+        "values": {
+            "temperature": 10.0,
+            "co2": 15.0,
+            "location": "AP2"
+        },
+        "status": "OK",
+        "alert": false
+    },
+    {
+        "deviceUUID": "1",
+        "topic": "temperatura",
+        "timeStamp": "30-04-2023 10:39:07",
+        "values": {
+            "temperature": 10.0,
+            "co2": 15.0,
+            "location": "AP2"
+        },
+        "status": "OK",
+        "alert": false
+    }
+]
+```
