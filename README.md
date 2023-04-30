@@ -80,3 +80,6 @@ Y la respuesta que se obtiene si existen mensajes guardados para este dispositiv
     }
 ]
 ```
+## API Document. 
+
+Para conocer los EndPoin de la API que expone el microservicio se instalo el paquete de Swagger que permite documenta fácilmente, para acceder se expone por la URL base del servicio + */swagger-ui.html#/*
